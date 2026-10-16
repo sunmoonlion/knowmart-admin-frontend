@@ -3,8 +3,8 @@
 
 set -e
 
-IMAGE_NAME="tpl-admin-frontend:1.0.0"
-CONTAINER_NAME="tpl-admin-frontend"
+IMAGE_NAME="knowmart-admin-frontend:1.0.0"
+CONTAINER_NAME="knowmart-admin-frontend"
 
 echo "🛑 停止并删除旧容器..."
 docker stop $CONTAINER_NAME 2>/dev/null || true
