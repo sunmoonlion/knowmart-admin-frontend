@@ -60,7 +60,12 @@
     "expandMenu": "Expand navigation",
     "closeTab": "Close {name}",
     "governance": "Administration capability migration",
-    "governanceDescription": "P0-007E will add navigation, authorization, CRUD, audit and shared tooling on this foundation."
+    "governanceDescription": "P0-007E will add navigation, authorization, CRUD, audit and shared tooling on this foundation.",
+    "marketListings": "Listing review",
+    "marketQualifications": "Qualification review",
+    "marketReports": "Reports",
+    "marketRules": "House rules",
+    "marketTrades": "Trades"
   },
   "settings": {
     "title": "Interface settings",
@@ -74,5 +79,73 @@
     "density_compact": "Compact",
     "language": "Language",
     "fullscreen": "Toggle fullscreen"
+  },
+  "marketAdmin": {
+    "listingsTitle": "Listing review",
+    "listingsLead": "Knowledge listings and experts asking to go public: complete, free of banned content (stock tips, target prices, ratings, promised returns), with the license the category needs. Only approved ones go up.",
+    "qualificationsTitle": "Qualification review",
+    "qualificationsLead": "Publishers' identity material and licenses. Photos are only viewed here and deleted a year after review.",
+    "reportsTitle": "Reports",
+    "reportsLead": "Upheld means taken down: buyers keep their knowledge; experts can no longer be asked, running tasks finish.",
+    "rulesTitle": "House rules",
+    "rulesLead": "Each change is a new version; older ones are kept. The web shows the latest.",
+    "tradesTitle": "Trades",
+    "tradesLead": "This period records prices and trades; no real payment.",
+    "knowledge": "Knowledge listings",
+    "experts": "Experts asking to go public",
+    "publishers": "Publishers",
+    "licenses": "Licenses",
+    "nothing": "Nothing to handle.",
+    "free": "Free",
+    "files": "Files: {names}",
+    "rights": "Rights: {text}",
+    "flagged": "Banned-type words found: {words}",
+    "note": "Note",
+    "notePlaceholder": "Say why when rejecting",
+    "approve": "Approve",
+    "reject": "Reject",
+    "problem": "That did not work ({code}).",
+    "kind": {
+      "individual": "Individual",
+      "organization": "Organization"
+    },
+    "individual": "Name: {name}, ID: {masked}",
+    "organization": "Credit code: {code}, legal person: {legal}, contact: {contact}",
+    "purged": "Photo deleted as scheduled",
+    "document": {
+      "id_front": "ID photo side",
+      "id_back": "ID emblem side",
+      "business_license": "Business license",
+      "license": "License photo"
+    },
+    "validUntil": "Valid until {date}",
+    "forever": "permanent",
+    "reportStatus": "Report status",
+    "report": {
+      "open": "Open",
+      "upheld": "Taken down",
+      "dismissed": "Dismissed"
+    },
+    "target": {
+      "expert": "Expert",
+      "knowledge": "Knowledge",
+      "demand": "Demand",
+      "response": "Response",
+      "message": "Message"
+    },
+    "handledNote": "Note: {note}",
+    "uphold": "Uphold and take down",
+    "dismiss": "Dismiss",
+    "rulesVersion": "Current version {version} (0 is the platform's first draft)",
+    "rulesBody": "House rules text",
+    "publishRules": "Publish a new version",
+    "rulesPublished": "Published.",
+    "tradeTitle": "Listing",
+    "tradeKind": "Kind",
+    "tradePrice": "Price",
+    "tradeInto": "Copied into",
+    "tradeAt": "When",
+    "prev": "Previous",
+    "next": "Next"
   }
 }

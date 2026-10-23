@@ -60,7 +60,12 @@
     "expandMenu": "展开导航",
     "closeTab": "关闭{name}",
     "governance": "管理能力迁移中枢",
-    "governanceDescription": "P0-007E 将在此基础上逐项迁入菜单、权限、CRUD、审计和通用工具能力。"
+    "governanceDescription": "P0-007E 将在此基础上逐项迁入菜单、权限、CRUD、审计和通用工具能力。",
+    "marketListings": "条目审核",
+    "marketQualifications": "资质审核",
+    "marketReports": "举报处理",
+    "marketRules": "驻场规则",
+    "marketTrades": "成交记录"
   },
   "settings": {
     "title": "界面设置",
@@ -74,5 +79,73 @@
     "density_compact": "紧凑",
     "language": "语言",
     "fullscreen": "切换全屏"
+  },
+  "marketAdmin": {
+    "listingsTitle": "条目审核",
+    "listingsLead": "知识条目与申请公开的专家：齐不齐、有没有禁止内容（荐股、目标价、评级、收益承诺）、类目要的资质有没有。审过才上架。",
+    "qualificationsTitle": "资质审核",
+    "qualificationsLead": "发布主体的实名材料与证照：照片只在这里看，审过后留一年清掉。",
+    "reportsTitle": "举报处理",
+    "reportsLead": "核实就下架：知识买家那份照旧在；专家下架后不能再请，在跑的跑完。",
+    "rulesTitle": "驻场规则",
+    "rulesLead": "改了出一个新版本，旧的留着；web端显示最新一版。",
+    "tradesTitle": "成交记录",
+    "tradesLead": "本期标价、记成交，不接真实支付。",
+    "knowledge": "知识条目",
+    "experts": "申请公开的专家",
+    "publishers": "发布主体",
+    "licenses": "证照",
+    "nothing": "没有等处理的。",
+    "free": "免费",
+    "files": "资料：{names}",
+    "rights": "权利声明：{text}",
+    "flagged": "出现了禁止类的词：{words}",
+    "note": "说明",
+    "notePlaceholder": "不通过要写理由",
+    "approve": "通过",
+    "reject": "不通过",
+    "problem": "没有成功（{code}）。",
+    "kind": {
+      "individual": "个人",
+      "organization": "非个人"
+    },
+    "individual": "姓名：{name}，身份证号：{masked}",
+    "organization": "统一社会信用代码：{code}，法人：{legal}，联系人：{contact}",
+    "purged": "照片已按期清掉",
+    "document": {
+      "id_front": "身份证人像面",
+      "id_back": "身份证国徽面",
+      "business_license": "营业执照",
+      "license": "证照照片"
+    },
+    "validUntil": "有效期至 {date}",
+    "forever": "长期",
+    "reportStatus": "举报的状态",
+    "report": {
+      "open": "待处理",
+      "upheld": "已下架",
+      "dismissed": "已驳回"
+    },
+    "target": {
+      "expert": "专家",
+      "knowledge": "知识",
+      "demand": "需求",
+      "response": "响应",
+      "message": "留言"
+    },
+    "handledNote": "处理说明：{note}",
+    "uphold": "核实，下架",
+    "dismiss": "驳回",
+    "rulesVersion": "当前第 {version} 版（0 是平台写的初版）",
+    "rulesBody": "驻场规则全文",
+    "publishRules": "发布新版本",
+    "rulesPublished": "已发布。",
+    "tradeTitle": "条目",
+    "tradeKind": "种类",
+    "tradePrice": "价格",
+    "tradeInto": "复制进",
+    "tradeAt": "时间",
+    "prev": "上一页",
+    "next": "下一页"
   }
 }
