@@ -426,7 +426,12 @@ export function TradesScreen() {
         <tbody>
           {(trades.data?.items ?? []).map((trade: Row) => (
             <tr key={trade.trade_id} className="border-t">
-              <td className="py-2">{trade.title}</td>
+              <td className="py-2">
+                {trade.title}
+                {trade.status === 'copying' ? (
+                  <span className="text-destructive ml-2 text-xs">{t('tradeCopying')}</span>
+                ) : null}
+              </td>
               <td>{t(`target.${trade.kind}`)}</td>
               <td>{trade.price === null ? t('free') : `¥${trade.price}`}</td>
               <td>{trade.target_app ?? '—'}</td>

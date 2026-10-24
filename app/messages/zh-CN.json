@@ -145,6 +145,7 @@
     "tradePrice": "价格",
     "tradeInto": "复制进",
     "tradeAt": "时间",
+    "tradeCopying": "还没复制完（买家重试会接着做）",
     "prev": "上一页",
     "next": "下一页"
   }

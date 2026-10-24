@@ -145,6 +145,7 @@
     "tradePrice": "Price",
     "tradeInto": "Copied into",
     "tradeAt": "When",
+    "tradeCopying": "Not fully copied (a retry by the buyer resumes it)",
     "prev": "Previous",
     "next": "Next"
   }
