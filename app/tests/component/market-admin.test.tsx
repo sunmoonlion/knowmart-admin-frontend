@@ -4,7 +4,11 @@ import { fireEvent, render, screen, waitFor, within } from '@testing-library/rea
 import { NextIntlClientProvider } from 'next-intl'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { ListingReview, ReportsScreen } from '@/components/market-admin/market-admin'
+import {
+  ListingReview,
+  QualificationReview,
+  ReportsScreen,
+} from '@/components/market-admin/market-admin'
 import messages from '@/messages/zh-CN.json'
 
 type Call = { method: string; path: string; body: unknown }
@@ -29,6 +33,21 @@ beforeEach(() => {
       if (path.endsWith('/queue')) {
         return json({
           publishers: [],
+          approved_publishers: [
+            {
+              publisher_id: 'p1',
+              name: '某某证券',
+              kind: 'organization',
+              licenses: [
+                {
+                  license_id: 'lic1',
+                  category: { name: '证券 / 期货投资咨询' },
+                  license_name: '许可证',
+                  license_no: '9',
+                },
+              ],
+            },
+          ],
           licenses: [],
           experts: [],
           knowledge: [
@@ -108,5 +127,25 @@ describe('供需市场的运营', () => {
         body: { uphold: true, note: '' },
       }),
     )
+  })
+
+  it('资质审核：审过的主体与证照可以撤销，要写理由（Fable 评审 P2-8）', async () => {
+    page(<QualificationReview csrfToken="csrf-token-value-that-is-long-enough-1234" />)
+    const block = within(
+      await screen.findByRole('region', { name: messages.marketAdmin.approvedPublishers }),
+    )
+    const [whole, one] = await block.findAllByRole('button', { name: messages.marketAdmin.revoke })
+    expect(one).toBeDisabled()
+    const [, licenseNote] = block.getAllByLabelText(messages.marketAdmin.revokeNote)
+    fireEvent.change(licenseNote!, { target: { value: '证照伪造' } })
+    fireEvent.click(one!)
+    await waitFor(() =>
+      expect(calls).toContainEqual({
+        method: 'POST',
+        path: '/api/admin/v1/knowmart/market/licenses/lic1/revocation',
+        body: { note: '证照伪造' },
+      }),
+    )
+    expect(whole).toBeDisabled()
   })
 })

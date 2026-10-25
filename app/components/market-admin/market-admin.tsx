@@ -15,6 +15,7 @@ const loose = z.record(z.string(), z.any())
 const queueSchema = z
   .object({
     publishers: z.array(loose),
+    approved_publishers: z.array(loose).optional(),
     licenses: z.array(loose),
     knowledge: z.array(loose),
     experts: z.array(loose),
@@ -30,6 +31,39 @@ const decide = (
   id: string,
   body: { approve: boolean; note: string },
 ) => requestJson(`${base}/${kind}/${seg(id)}/decision`, { method: 'POST', csrfToken, body })
+
+const revoke = (csrfToken: string, kind: string, id: string, note: string) =>
+  requestJson(`${base}/${kind}/${seg(id)}/revocation`, {
+    method: 'POST',
+    csrfToken,
+    body: { note },
+  })
+
+// 撤销审过的：写明为什么（Fable 评审 P2-8）
+function Revoke({ onRevoke, busy }: { onRevoke: (note: string) => void; busy: boolean }) {
+  const t = useTranslations('marketAdmin')
+  const [note, setNote] = useState('')
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <input
+        className="min-w-48 flex-1 rounded border px-2 py-1 text-xs"
+        aria-label={t('revokeNote')}
+        placeholder={t('revokeNote')}
+        value={note}
+        maxLength={2000}
+        onChange={(e) => setNote(e.target.value)}
+      />
+      <Button
+        size="sm"
+        variant="outline"
+        disabled={busy || !note.trim()}
+        onClick={() => onRevoke(note.trim())}
+      >
+        {t('revoke')}
+      </Button>
+    </div>
+  )
+}
 
 function problem(error: unknown): string | null {
   if (!error) return null
@@ -173,7 +207,13 @@ export function QualificationReview({ csrfToken }: { csrfToken: string }) {
   const queue = useQuery({ queryKey: QUEUE, queryFn: fetchQueue })
   const publishers = useDecide(csrfToken, 'publishers')
   const licenses = useDecide(csrfToken, 'licenses')
-  const code = problem(queue.error ?? publishers.error ?? licenses.error)
+  const client = useQueryClient()
+  const revoked = useMutation({
+    mutationFn: (input: { kind: 'publishers' | 'licenses'; id: string; note: string }) =>
+      revoke(csrfToken, input.kind, input.id, input.note),
+    onSuccess: () => client.invalidateQueries({ queryKey: QUEUE }),
+  })
+  const code = problem(queue.error ?? publishers.error ?? licenses.error ?? revoked.error)
   return (
     <div className="space-y-8">
       {code ? (
@@ -246,6 +286,35 @@ export function QualificationReview({ csrfToken }: { csrfToken: string }) {
               busy={licenses.isPending}
               onDecide={(approve, note) => licenses.mutate({ id: lic.license_id, approve, note })}
             />
+          </li>
+        ))}
+      </Section>
+      <Section title={t('approvedPublishers')} empty={!queue.data?.approved_publishers?.length}>
+        <p className="text-muted-foreground text-xs">{t('revokeLead')}</p>
+        {(queue.data?.approved_publishers ?? []).map((p: Row) => (
+          <li key={p.publisher_id} className="space-y-2 rounded-lg border p-4 text-sm">
+            <p className="font-medium">
+              {p.name} · {t(`kind.${p.kind}`)}
+            </p>
+            <Revoke
+              busy={revoked.isPending}
+              onRevoke={(note) => revoked.mutate({ kind: 'publishers', id: p.publisher_id, note })}
+            />
+            <ul className="space-y-2">
+              {(p.licenses ?? []).map((lic: Row) => (
+                <li key={lic.license_id} className="space-y-1 border-l-2 pl-3">
+                  <p>
+                    {lic.category?.name} · {lic.license_name} · {lic.license_no}
+                  </p>
+                  <Revoke
+                    busy={revoked.isPending}
+                    onRevoke={(note) =>
+                      revoked.mutate({ kind: 'licenses', id: lic.license_id, note })
+                    }
+                  />
+                </li>
+              ))}
+            </ul>
           </li>
         ))}
       </Section>
