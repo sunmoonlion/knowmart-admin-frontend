@@ -147,9 +147,9 @@
     "tradeTitle": "Listing",
     "tradeKind": "Kind",
     "tradePrice": "Price",
-    "tradeInto": "Copied into",
+    "tradeInto": "Copied into (old trades)",
     "tradeAt": "When",
-    "tradeCopying": "Not fully copied (a retry by the buyer resumes it)",
+    "tradeCopying": "Not finished (a retry by the buyer resumes it)",
     "prev": "Previous",
     "next": "Next"
   }
