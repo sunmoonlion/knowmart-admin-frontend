@@ -497,7 +497,7 @@ export function TradesScreen() {
             <tr key={trade.trade_id} className="border-t">
               <td className="py-2">
                 {trade.title}
-                {trade.status === 'copying' ? (
+                {trade.status === 'granting' ? (
                   <span className="text-destructive ml-2 text-xs">{t('tradeCopying')}</span>
                 ) : null}
               </td>
