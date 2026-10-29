@@ -1,4 +1,5 @@
-// 供需市场的运营（SDD 0018 第十一节）：条目审核要写理由才能不通过；举报核实就下架
+// 供需市场的运营（SDD 0018 第十一节）：条目审核要写理由才能不通过；举报核实就下架；
+// 小店停店、恢复要写理由（第 7 之二小节）
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
@@ -8,6 +9,7 @@ import {
   ListingReview,
   QualificationReview,
   ReportsScreen,
+  ShopsScreen,
 } from '@/components/market-admin/market-admin'
 import messages from '@/messages/zh-CN.json'
 
@@ -75,6 +77,21 @@ beforeEach(() => {
               reason: '有收益承诺',
               status: 'open',
               note: null,
+            },
+          ],
+        })
+      }
+      if (path.endsWith('/shops')) {
+        return json({
+          items: [
+            {
+              shop_id: 's1',
+              name: '张三的数据铺',
+              owner_subject: 'u-1',
+              status: 'suspended',
+              status_note: '屡次违规',
+              publisher: { name: '张三工作室' },
+              history: [{ kind: 'suspended', note: '屡次违规', at: '2026-10-29T00:00:00Z' }],
             },
           ],
         })
@@ -147,5 +164,24 @@ describe('供需市场的运营', () => {
       }),
     )
     expect(whole).toBeDisabled()
+  })
+
+  it('小店处置：停了的店写理由才能恢复，留痕看得到', async () => {
+    page(<ShopsScreen csrfToken="csrf" />)
+    expect(await screen.findByText('停店理由：屡次违规')).toBeInTheDocument()
+    expect(screen.getByText('停店：屡次违规', { exact: false })).toBeInTheDocument()
+    const restore = screen.getByRole('button', { name: '恢复' })
+    expect(restore).toBeDisabled()
+    fireEvent.change(screen.getByLabelText('理由（店主看得到）'), { target: { value: '整改完' } })
+    fireEvent.click(restore)
+    await waitFor(() =>
+      expect(calls).toEqual([
+        {
+          method: 'POST',
+          path: '/api/admin/v1/knowmart/market/shops/s1/restoration',
+          body: { note: '整改完' },
+        },
+      ]),
+    )
   })
 })

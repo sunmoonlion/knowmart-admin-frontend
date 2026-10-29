@@ -65,7 +65,8 @@
     "marketQualifications": "Qualification review",
     "marketReports": "Reports",
     "marketRules": "House rules",
-    "marketTrades": "Trades"
+    "marketTrades": "Trades",
+    "marketShops": "Shops"
   },
   "settings": {
     "title": "Interface settings",
@@ -151,6 +152,26 @@
     "tradeAt": "When",
     "tradeCopying": "Not finished (a retry by the buyer resumes it)",
     "prev": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "shopsTitle": "Shops",
+    "shopsLead": "Suspension persists: while suspended the shop is off the home list, its items cannot be submitted, approved, bought or asked, and its demands leave the hall; item states are untouched, so items taken down on their own stay down after restoring; past trades stand. Suspending and restoring need a reason the owner can see.",
+    "shopSearch": "Shop name or owner id",
+    "shopStatus": "Shop status",
+    "shopAll": "All",
+    "shopFind": "Find",
+    "shop": {
+      "open": "Open",
+      "suspended": "Suspended"
+    },
+    "shopPublisher": "Publisher: {name}",
+    "shopNote": "Reason: {note}",
+    "shopReason": "Reason (the owner sees it)",
+    "shopSuspend": "Suspend",
+    "shopRestore": "Restore",
+    "shopRenamed": "Renamed: {old} → {new}",
+    "shopEvent": {
+      "suspended": "Suspended: {note}",
+      "restored": "Restored: {note}"
+    }
   }
 }

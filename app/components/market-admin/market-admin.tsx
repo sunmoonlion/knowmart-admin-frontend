@@ -8,7 +8,8 @@ import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { ApiClientError, requestJson } from '@/lib/api/client'
 
-// 供需市场的运营（SDD 0018 第十一节第 7 小节）：条目审核、资质审核、举报处理、驻场规则、成交记录
+// 供需市场的运营（SDD 0018 第十一节第 7 小节）：条目审核、资质审核、举报处理、驻场规则、成交记录；
+// 小店的处置（第 7 之二小节）
 const base = '/api/admin/v1/knowmart/market'
 const seg = encodeURIComponent
 const loose = z.record(z.string(), z.any())
@@ -406,6 +407,150 @@ export function ReportsScreen({ csrfToken }: { csrfToken: string }) {
             ) : null}
           </li>
         ))}
+      </ul>
+    </div>
+  )
+}
+
+// 小店的处置（SDD 0018 第十一节第 7 之二小节；数据拓扑第十一节）：停店是持久的，停着时公开列表、
+// 条目发布、审核转公开、下单、请专家都不过；恢复不动被单独下架的条目；历史订单不撤。都要写理由、留痕
+export function ShopsScreen({ csrfToken }: { csrfToken: string }) {
+  const t = useTranslations('marketAdmin')
+  const client = useQueryClient()
+  const [words, setWords] = useState('')
+  const [filters, setFilters] = useState<{ q: string; status: '' | 'open' | 'suspended' }>({
+    q: '',
+    status: '',
+  })
+  const shops = useQuery({
+    queryKey: ['admin', 'market', 'shops', filters] as const,
+    queryFn: async () => {
+      const query = new URLSearchParams()
+      if (filters.q) query.set('q', filters.q)
+      if (filters.status) query.set('status', filters.status)
+      const suffix = query.size ? `?${query}` : ''
+      return z
+        .object({ items: z.array(loose) })
+        .loose()
+        .parse(await requestJson(`${base}/shops${suffix}`))
+    },
+  })
+  const [notes, setNotes] = useState<Record<string, string>>({})
+  const act = useMutation({
+    mutationFn: (input: { id: string; action: 'suspension' | 'restoration' }) =>
+      requestJson(`${base}/shops/${seg(input.id)}/${input.action}`, {
+        method: 'POST',
+        csrfToken,
+        body: { note: (notes[input.id] ?? '').trim() },
+      }),
+    onSuccess: () => client.invalidateQueries({ queryKey: ['admin', 'market', 'shops'] }),
+  })
+  const code = problem(shops.error ?? act.error)
+  return (
+    <div className="space-y-4">
+      <form
+        role="search"
+        className="flex flex-wrap gap-2"
+        onSubmit={(event) => {
+          event.preventDefault()
+          setFilters({ ...filters, q: words.trim() })
+        }}
+      >
+        <input
+          className="min-w-60 rounded-md border px-2 py-1 text-sm"
+          aria-label={t('shopSearch')}
+          placeholder={t('shopSearch')}
+          value={words}
+          maxLength={512}
+          onChange={(event) => setWords(event.target.value)}
+        />
+        <select
+          className="rounded-md border px-2 py-1 text-sm"
+          aria-label={t('shopStatus')}
+          value={filters.status}
+          onChange={(event) =>
+            setFilters({ ...filters, status: event.target.value as '' | 'open' | 'suspended' })
+          }
+        >
+          <option value="">{t('shopAll')}</option>
+          <option value="open">{t('shop.open')}</option>
+          <option value="suspended">{t('shop.suspended')}</option>
+        </select>
+        <Button type="submit" size="sm" variant="outline">
+          {t('shopFind')}
+        </Button>
+      </form>
+      {code ? (
+        <p role="alert" className="text-destructive text-sm">
+          {t('problem', { code })}
+        </p>
+      ) : null}
+      {shops.data && shops.data.items.length === 0 ? (
+        <p className="text-muted-foreground text-sm">{t('nothing')}</p>
+      ) : null}
+      <ul className="space-y-3">
+        {(shops.data?.items ?? []).map((shop: Row) => {
+          const suspended = shop.status === 'suspended'
+          const note = (notes[shop.shop_id] ?? '').trim()
+          return (
+            <li key={shop.shop_id} className="space-y-2 rounded-lg border p-4 text-sm">
+              <p className="flex flex-wrap items-center gap-2">
+                <span className="font-medium">{shop.name}</span>
+                <span
+                  className={`rounded-full px-2 py-0.5 text-xs ${suspended ? 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200' : 'bg-muted text-muted-foreground'}`}
+                >
+                  {t(`shop.${shop.status}`)}
+                </span>
+                {shop.publisher ? (
+                  <span className="text-muted-foreground text-xs">
+                    {t('shopPublisher', { name: shop.publisher.name })}
+                  </span>
+                ) : null}
+                <span className="text-muted-foreground font-mono text-xs">
+                  {shop.owner_subject}
+                </span>
+              </p>
+              {suspended && shop.status_note ? (
+                <p className="text-xs">{t('shopNote', { note: shop.status_note })}</p>
+              ) : null}
+              <div className="flex flex-wrap items-center gap-2">
+                <input
+                  className="min-w-60 flex-1 rounded-md border px-2 py-1 text-sm"
+                  aria-label={t('shopReason')}
+                  placeholder={t('shopReason')}
+                  value={notes[shop.shop_id] ?? ''}
+                  maxLength={2000}
+                  onChange={(event) => setNotes({ ...notes, [shop.shop_id]: event.target.value })}
+                />
+                <Button
+                  size="sm"
+                  variant={suspended ? 'default' : 'outline'}
+                  disabled={act.isPending || !note}
+                  onClick={() =>
+                    act.mutate({
+                      id: shop.shop_id,
+                      action: suspended ? 'restoration' : 'suspension',
+                    })
+                  }
+                >
+                  {t(suspended ? 'shopRestore' : 'shopSuspend')}
+                </Button>
+              </div>
+              {(shop.history ?? []).length > 0 ? (
+                <ul className="text-muted-foreground space-y-1 text-xs">
+                  {(shop.history as Row[]).map((event, index) => (
+                    <li key={index}>
+                      {event.at ? `${event.at.slice(0, 10)} ` : ''}
+                      {event.kind === 'renamed'
+                        ? t('shopRenamed', { old: event.old_name ?? '', new: event.new_name ?? '' })
+                        : t(`shopEvent.${event.kind}`, { note: event.note ?? '' })}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </li>
+          )
+        })}
       </ul>
     </div>
   )

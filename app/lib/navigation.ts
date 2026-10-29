@@ -7,6 +7,7 @@ import {
   Receipt,
   ScrollText,
   Settings,
+  Store,
   TableProperties,
   type LucideIcon,
 } from 'lucide-react'
@@ -24,6 +25,7 @@ export type AdminNavigationItem = {
     | 'marketReports'
     | 'marketRules'
     | 'marketTrades'
+    | 'marketShops'
   icon: LucideIcon
   requiredRoles?: readonly string[]
   pinned?: boolean
@@ -57,6 +59,14 @@ export const adminNavigation: readonly AdminNavigationItem[] = [
     path: '/market/reports',
     labelKey: 'marketReports',
     icon: Flag,
+    requiredRoles: ['admin', 'operator'],
+  },
+  // 小店的处置（第 7 之二小节）：停店、恢复，留痕
+  {
+    key: 'market-shops',
+    path: '/market/shops',
+    labelKey: 'marketShops',
+    icon: Store,
     requiredRoles: ['admin', 'operator'],
   },
   {

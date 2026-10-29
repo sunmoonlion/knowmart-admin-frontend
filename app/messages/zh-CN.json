@@ -65,7 +65,8 @@
     "marketQualifications": "资质审核",
     "marketReports": "举报处理",
     "marketRules": "驻场规则",
-    "marketTrades": "成交记录"
+    "marketTrades": "成交记录",
+    "marketShops": "小店处置"
   },
   "settings": {
     "title": "界面设置",
@@ -151,6 +152,26 @@
     "tradeAt": "时间",
     "tradeCopying": "还没办完（买家重试会接着做）",
     "prev": "上一页",
-    "next": "下一页"
+    "next": "下一页",
+    "shopsTitle": "小店处置",
+    "shopsLead": "停店是持久的：停着时这家店不在首页列表，条目不能交审、审核转公开、被买、被请，需求不进大厅；条目自己的状态不动，恢复后单独下架的照旧下架；已成交的照旧。停店、恢复都要写理由，店主看得到。",
+    "shopSearch": "店名或店主编号",
+    "shopStatus": "小店的状态",
+    "shopAll": "全部",
+    "shopFind": "找",
+    "shop": {
+      "open": "营业中",
+      "suspended": "已停店"
+    },
+    "shopPublisher": "发布主体：{name}",
+    "shopNote": "停店理由：{note}",
+    "shopReason": "理由（店主看得到）",
+    "shopSuspend": "停店",
+    "shopRestore": "恢复",
+    "shopRenamed": "改店名：{old} → {new}",
+    "shopEvent": {
+      "suspended": "停店：{note}",
+      "restored": "恢复：{note}"
+    }
   }
 }
