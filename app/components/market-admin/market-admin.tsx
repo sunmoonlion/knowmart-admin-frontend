@@ -418,9 +418,10 @@ export function ShopsScreen({ csrfToken }: { csrfToken: string }) {
   const t = useTranslations('marketAdmin')
   const client = useQueryClient()
   const [words, setWords] = useState('')
-  const [filters, setFilters] = useState<{ q: string; status: '' | 'open' | 'suspended' }>({
+  const [filters, setFilters] = useState<{ q: string; status: '' | 'open' | 'suspended'; page: number }>({
     q: '',
     status: '',
+    page: 1,
   })
   const shops = useQuery({
     queryKey: ['admin', 'market', 'shops', filters] as const,
@@ -428,6 +429,7 @@ export function ShopsScreen({ csrfToken }: { csrfToken: string }) {
       const query = new URLSearchParams()
       if (filters.q) query.set('q', filters.q)
       if (filters.status) query.set('status', filters.status)
+      if (filters.page > 1) query.set('page', String(filters.page))
       const suffix = query.size ? `?${query}` : ''
       return z
         .object({ items: z.array(loose) })
@@ -453,7 +455,7 @@ export function ShopsScreen({ csrfToken }: { csrfToken: string }) {
         className="flex flex-wrap gap-2"
         onSubmit={(event) => {
           event.preventDefault()
-          setFilters({ ...filters, q: words.trim() })
+          setFilters({ ...filters, q: words.trim(), page: 1 })
         }}
       >
         <input
@@ -469,7 +471,7 @@ export function ShopsScreen({ csrfToken }: { csrfToken: string }) {
           aria-label={t('shopStatus')}
           value={filters.status}
           onChange={(event) =>
-            setFilters({ ...filters, status: event.target.value as '' | 'open' | 'suspended' })
+            setFilters({ ...filters, status: event.target.value as '' | 'open' | 'suspended', page: 1 })
           }
         >
           <option value="">{t('shopAll')}</option>
@@ -538,20 +540,48 @@ export function ShopsScreen({ csrfToken }: { csrfToken: string }) {
               </div>
               {(shop.history ?? []).length > 0 ? (
                 <ul className="text-muted-foreground space-y-1 text-xs">
-                  {(shop.history as Row[]).map((event, index) => (
-                    <li key={index}>
-                      {event.at ? `${event.at.slice(0, 10)} ` : ''}
-                      {event.kind === 'renamed'
-                        ? t('shopRenamed', { old: event.old_name ?? '', new: event.new_name ?? '' })
-                        : t(`shopEvent.${event.kind}`, { note: event.note ?? '' })}
-                    </li>
-                  ))}
+                  {(shop.history as Row[]).map((event, index) => {
+                    let formattedAt = event.at ? event.at.slice(0, 10) : ''
+                    try {
+                      if (event.at) {
+                        formattedAt = new Date(event.at).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai', hour12: false })
+                      }
+                    } catch {}
+                    return (
+                      <li key={index}>
+                        {formattedAt ? `${formattedAt} ` : ''}
+                        {event.kind === 'renamed'
+                          ? t('shopRenamed', { old: event.old_name ?? '', new: event.new_name ?? '' })
+                          : t(`shopEvent.${event.kind}`, { note: event.note ?? '' })}
+                        {event.by_subject ? ` · 由 ${event.by_subject}` : ''}
+                      </li>
+                    )
+                  })}
                 </ul>
               ) : null}
             </li>
           )
         })}
       </ul>
+      <div className="flex items-center justify-between pt-2 text-sm">
+        <Button
+          size="sm"
+          variant="outline"
+          disabled={filters.page <= 1}
+          onClick={() => setFilters({ ...filters, page: filters.page - 1 })}
+        >
+          上一页
+        </Button>
+        <span className="text-xs text-muted-foreground">第 {filters.page} 页</span>
+        <Button
+          size="sm"
+          variant="outline"
+          disabled={(shops.data?.items ?? []).length < 96}
+          onClick={() => setFilters({ ...filters, page: filters.page + 1 })}
+        >
+          下一页
+        </Button>
+      </div>
     </div>
   )
 }
